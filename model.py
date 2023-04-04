@@ -6,7 +6,7 @@ class MyModel(nn.Module):
     def __init__(self, num_classes):
         super(MyModel, self).__init__()
 
-        self.features = nn.Sequential(*list(models.resnet50(pretrained = True).children())[:-1])
+        self.features = nn.Sequential(*list(models.resnet50(weights='ResNet50_Weights.DEFAULT').children())[:-1])
         self.classifier = nn.Linear(2048, num_classes)
         
     def forward(self, x):
