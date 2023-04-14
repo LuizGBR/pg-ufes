@@ -1,30 +1,32 @@
 import torch
-import pandas
 import time
 
 import model
 import loader
+import utils
 
 # Setting the path to the directory containing the images
-images_path = "/Users/LG - Workspace/Documents/Machine Learning/Datasets/HAM10000/images"
+images_path = "/Users/LG - Workspace/Documents/Machine Learning/Datasets/Reddit Skin Lesions/images"
 
 # Setting the percentage of images to use for training (80%)
 train_percent = 0.8
 
-# defining the path to the CSV file containing information about skin lesion images
-info_path = "/Users/LG - Workspace/Documents/Machine Learning/Datasets/HAM10000/HAM10000_metadata"
+# defining the path to the JSON file containing information about skin lesion images
+info_path = "/Users/LG - Workspace/Documents/Machine Learning/Datasets/Reddit Skin Lesions/dataset.json"
 
-# reading the CSV file into a Pandas DataFrame object, using the "image_id" column as the index column
-csv = pandas.read_csv(info_path, index_col="image_id").squeeze("columns")
+# getting the data information in csv format
+csv = utils.get_data_info(info_path)
 
-# create a dictionary that maps skin lesion types to numeric labels
-label_values = {'akiec': 0, 'bcc': 1, 'bkl': 2, 'df':3 , 'mel': 4, 'nv': 5, 'vasc': 6 }
+# create a dictionary that maps subreddits to numeric labels
+label_values = {'Dermatology': 0, 'skincancer': 1, 'skin': 2, 'Skincare_Addiction': 3, 'Rosacea': 4, 'skin': 5, 'Psoriasis': 6,
+                'SkincareAddiction': 7, '30PlusSkinCare': 8, 'Warts': 9, 'peeling': 10, 'Acne': 11, 'skincancer': 12, 'eczema': 13,
+                'popping': 14, 'SkincareAddicts': 15}
 
 # Getting image paths and corresponding labels
-train_files, test_files = loader.get_image_batches(images_path, train_percent)
+train_files, test_files = utils.get_image_groups(images_path, train_percent)
 
-train_labels = loader.get_labels(train_files, label_values, csv)
-test_labels = loader.get_labels(test_files, label_values, csv)
+train_labels = utils.get_labels(train_files, label_values, csv)
+test_labels = utils.get_labels(test_files, label_values, csv)
 
 # Generating the datasets and dataloaders
 train_dataset = loader.MyDataset(train_files, train_labels, my_transform=None)
@@ -34,7 +36,7 @@ train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size
 test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
 
 # Setting configs
-model = model.MyModel(num_classes=7)
+model = model.MyModel(num_classes=16)
 loss_func = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 num_epochs = 10
