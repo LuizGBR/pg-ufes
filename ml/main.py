@@ -31,8 +31,8 @@ train_labels = utils.get_labels(train_files, label_values, csv)
 test_labels = utils.get_labels(test_files, label_values, csv)
 
 # Generating the datasets and dataloaders
-train_dataset = loader.MyDataset(train_files, train_labels, my_transform=aug.ImgTrainTransform())
-test_dataset = loader.MyDataset(test_files, test_labels, my_transform=aug.ImgEvalTransform())
+train_dataset = loader.MyDataset(train_files, train_labels, my_transform=None)
+test_dataset = loader.MyDataset(test_files, test_labels, my_transform=None)
 batch_size = 30
 train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
@@ -50,7 +50,6 @@ model.to(device)
 start_time = time.time()
 for epoch in range(num_epochs):
     for k, (batch_images, batch_labels, id_img) in enumerate(train_dataloader):
-        print('eita')
         batch_images = batch_images.to(device)
         batch_labels = batch_labels.to(device)
         
@@ -63,7 +62,7 @@ for epoch in range(num_epochs):
 
     print (f"- Epoch [{epoch+1}/{num_epochs}] | Loss: {loss.item():.4f}")         
 
-    # making inferences
+# making inferences
 with torch.no_grad():
     correct, total = 0, 0
     for images, labels, img_id in test_dataloader:
