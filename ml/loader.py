@@ -24,16 +24,12 @@ class MyDataset(torch.utils.data.Dataset):
     def __getitem__(self, item):
 
         img = Image.open(self.imgs_path[item]).convert("RGB")
-
-        resized_image = fn.resize(img, size=[224,224]) # Resizing to resnet default size
         
-        image = self.transform(resized_image) # Applying the transformations
+        image = self.transform(img) # Applying the transformations
 
-        img_id = self.imgs_path[item].split('\\')[-1].split('.')[0]
-        
         if self.labels is None:
             labels = []
         else:
             labels = self.labels[item]
 
-        return image, labels, img_id
+        return image, labels

@@ -1,16 +1,35 @@
-import torch.nn as nn
+import torch
 from torchvision import models
+import pytorch_lightning
 
 
-class MyModel(nn.Module):
+class MyModel(pytorch_lightning.LightningModule):
     def __init__(self, num_classes):
-        super(MyModel, self).__init__()
+        super().__init__()
+        resnet = models.resnet50(weights='ResNet50_Weights.DEFAULT')
+        # Remove the last layer (the fully-connected layer) from the ResNet model
+        self.features =torch.nn.Sequential(*list(resnet.children())[:-1])
+        # Add a linear classifier on top of the ResNet features
+        self.classifier = torch.nn.Linear(resnet.fc.in_features, num_classes)
 
-        self.features = nn.Sequential(*list(models.resnet50(weights='ResNet50_Weights.DEFAULT').children())[:-1])
-        self.classifier = nn.Linear(2048, num_classes)
-        
     def forward(self, x):
-        out = self.features(x)                
-        out = out.reshape(out.size(0), -1) # performing flattening      
-        out = self.classifier(out)
-        return out
+        # Pass the input tensor through the ResNet features
+        x = self.features(x)
+        # Flatten the features into a 1D tensor
+        x = x.view(x.size(0), -1)
+        # Pass the features through the linear classifier
+        x = self.classifier(x)
+        return x
+
+    def training_step(self, batch, batch_idx):
+        batch_images, batch_labels = batch    
+        outputs = self(batch_images)
+        loss = torch.nn.CrossEntropyLoss()(outputs, batch_labels)
+        
+        self.log('train_loss', loss)
+        return loss
+
+    def configure_optimizers(self):
+        optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
+        return optimizer
+
