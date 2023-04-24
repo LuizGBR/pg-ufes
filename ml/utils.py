@@ -8,7 +8,7 @@ def get_data_info(info_path):
     # Read the JSON file into a pandas DataFrame
     df = pandas.read_json(info_path)
 
-    # melt the DataFrame to combine all columns into a single column named 'value'
+    # Melt the DataFrame to combine all columns into a single column named 'value'
     csv = pandas.melt(df, var_name='img_id', value_name='value')
 
     # Adding a new column with the column index (starting at 1)

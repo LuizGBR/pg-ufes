@@ -33,3 +33,14 @@ class MyModel(pytorch_lightning.LightningModule):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
         return optimizer
 
+    
+    def test_step(self, batch, batch_idx):
+        batch_images, batch_labels = batch
+        outputs = self(batch_images)
+        _, predicted = torch.max(outputs, 1)
+        correct = (predicted == batch_labels).sum().item()
+        accuracy = correct / batch_labels.size(0)
+        
+        self.log('test_accuracy', accuracy)
+        
+        return accuracy
