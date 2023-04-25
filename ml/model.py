@@ -34,13 +34,18 @@ class MyModel(pytorch_lightning.LightningModule):
         return optimizer
 
     
-    def test_step(self, batch, batch_idx):
+    def validation_step(self, batch, batch_idx):
         batch_images, batch_labels = batch
         outputs = self(batch_images)
-        _, predicted = torch.max(outputs, 1)
+        loss = torch.nn.CrossEntropyLoss()(outputs, batch_labels)
+
+        # Calculate accuracy
+        _, predicted = torch.max(outputs.data, 1)
         correct = (predicted == batch_labels).sum().item()
-        accuracy = correct / batch_labels.size(0)
-        
-        self.log('test_accuracy', accuracy)
-        
-        return accuracy
+        total = batch_labels.size(0)
+        accuracy = correct / total
+
+        self.log('val_loss', loss, on_step=True, on_epoch=True)
+        self.log('val_accuracy', accuracy, on_step=True, on_epoch=True)
+
+        return {'val_loss': loss, 'val_accuracy': accuracy}

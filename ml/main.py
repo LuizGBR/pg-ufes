@@ -19,9 +19,9 @@ if __name__ == '__main__':
     csv = utils.get_data_info(info_path)
 
     # create a dictionary that maps subreddits to numeric labels
-    label_values = {'Dermatology': 0, 'skincancer': 1, 'skin': 2, 'Skincare_Addiction': 3, 'Rosacea': 4, 'skin': 5, 'Psoriasis': 6,
-                    'SkincareAddiction': 7, '30PlusSkinCare': 8, 'Warts': 9, 'peeling': 10, 'Acne': 11, 'eczema': 12,
-                    'popping': 13, 'SkincareAddicts': 14}
+    label_values = {'Dermatology': 0, 'skincancer': 1, 'skin': 2, 'Skincare_Addiction': 3, 'Rosacea': 4, 'Psoriasis': 5,
+                    'SkincareAddiction': 6, '30PlusSkinCare': 7, 'Warts': 8, 'peeling': 9, 'Acne': 10, 'eczema': 11,
+                    'popping': 12, 'SkincareAddicts': 13}
 
     # Setting the percentage of images to use for training (80%)
     train_percent = 0.8
@@ -36,21 +36,18 @@ if __name__ == '__main__':
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
     train_dataset = loader.MyDataset(train_files, train_labels, my_transform=transform)
-    test_dataset = loader.MyDataset(val_files, val_labels, my_transform=transform)
+    val_dataset = loader.MyDataset(val_files, val_labels, my_transform=transform)
     batch_size = 10
     train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, num_workers=12)
-    test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False, num_workers=12)
+    val_dataloader = torch.utils.data.DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False, num_workers=12)
 
 
     #setting the model
     model = model.MyModel(num_classes=len(label_values)+1)
 
     #training the model
-    trainer = pytorch_lightning.Trainer(limit_train_batches=30, max_epochs=10, log_every_n_steps=30)
-    trainer.fit(model=model, train_dataloaders=train_dataloader)
-
-    #testing the model
-    trainer.test(model=model, dataloaders=test_dataloader)
+    trainer = pytorch_lightning.Trainer(max_epochs=10, log_every_n_steps=30)
+    trainer.fit(model=model, train_dataloaders=train_dataloader, val_dataloaders=val_dataloader)       
