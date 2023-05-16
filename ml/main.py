@@ -16,21 +16,19 @@ if __name__ == '__main__':
     info_path = "/Users/LG - Workspace/Documents/Machine Learning/Datasets/Reddit Skin Lesions/dataset.json"
 
     # getting the data information in csv format
-    csv = utils.get_data_info(info_path)
+    info = utils.get_data_info(info_path)
+
+    csv_data = utils.split_k_folder_csv(info, col_target="subreddit", save_path=None, k_folder=5, seed_number=13)
 
     # create a dictionary that maps subreddits to numeric labels
     label_values = {'Dermatology': 0, 'skincancer': 1, 'skin': 2, 'Skincare_Addiction': 3, 'Rosacea': 4, 'Psoriasis': 5,
                     'SkincareAddiction': 6, '30PlusSkinCare': 7, 'Warts': 8, 'peeling': 9, 'Acne': 10, 'eczema': 11,
                     'popping': 12, 'SkincareAddicts': 13}
-
-    # Setting the percentage of images to use for training (80%)
-    train_percent = 0.8
-
+    
     # Getting image paths and corresponding labels
-    train_files, val_files = utils.get_image_groups(images_path, train_percent)
-
-    train_labels = utils.get_labels(train_files, label_values, csv)
-    val_labels = utils.get_labels(val_files, label_values, csv)
+    train_files, val_files = utils.get_image_files(images_path, csv_data, val_folder=1)   
+    train_labels = utils.get_labels(train_files, label_values, csv_data)
+    val_labels = utils.get_labels(val_files, label_values, csv_data)
 
     # Generating the datasets and dataloaders
     transform = transforms.Compose([
