@@ -122,7 +122,7 @@ def main (_folder, _csv_path_train, _imgs_folder_train, _lr_init, _sched_factor,
     print("- Loading training data...")
     train_imgs_id = train_csv_folder['img_id'].values
     train_imgs_path = ["{}/{}".format(_imgs_folder_train, img_id) for img_id in train_imgs_id]
-    print(train_imgs_path)
+    
     train_labels = train_csv_folder['subreddit_number'].values
     if _use_meta_data:
         train_meta_data = train_csv_folder[meta_data_columns].values
