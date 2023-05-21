@@ -107,7 +107,12 @@ def main (_folder, _csv_path_train, _imgs_folder_train, _lr_init, _sched_factor,
 
     # Loading validation data
     val_imgs_id = val_csv_folder['img_id'].values
-    val_imgs_path = ["{}/{}".format(_imgs_folder_train, img_id) for img_id in val_imgs_id]
+    val_imgs_path = []
+    for img_id in val_imgs_id:
+        path = "{}/{}.png".format(_imgs_folder_train, img_id)
+        if os.path.exists(path):
+            val_imgs_path.append(path)
+
     val_labels = val_csv_folder['subreddit_number'].values
     if _use_meta_data:
         val_meta_data = val_csv_folder[meta_data_columns].values
@@ -121,7 +126,11 @@ def main (_folder, _csv_path_train, _imgs_folder_train, _lr_init, _sched_factor,
 
     print("- Loading training data...")
     train_imgs_id = train_csv_folder['img_id'].values
-    train_imgs_path = ["{}/{}".format(_imgs_folder_train, img_id) for img_id in train_imgs_id]
+    train_imgs_path = []
+    for img_id in train_imgs_id:
+        path = "{}/{}.png".format(_imgs_folder_train, img_id)
+        if os.path.exists(path):
+            train_imgs_path.append(path)
     
     train_labels = train_csv_folder['subreddit_number'].values
     if _use_meta_data:
