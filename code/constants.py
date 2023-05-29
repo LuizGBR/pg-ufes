@@ -7,4 +7,6 @@ Please, use this file to set the constants that will be used to load important l
 """
 
 # The path to Raug. You may find it here: https://github.com/paaatcha/raug
-RAUG_PATH = "/mnt/c/Users/LG - Workspace/Documents/Machine Learning/Pipeline/raug/"
+RAUG_PATH = "/home/lg/code/raug/"
+
+REDDIT_BASE_PATH = "/datasets"

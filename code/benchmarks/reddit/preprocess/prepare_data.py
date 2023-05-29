@@ -1,13 +1,11 @@
 import sys
 sys.path.insert(0,'../../..') # including the path to deep-tasks folder
-from constants import RAUG_PATH
+from constants import RAUG_PATH, REDDIT_BASE_PATH
 sys.path.insert(0, RAUG_PATH)
 import pandas
 import os
 import json
 from raug.utils.loader import split_k_folder_csv, label_categorical_to_number
-
-REDDIT_BASE_PATH = "/mnt/c/Users/LG - Workspace/Documents/Machine Learning/Datasets/Reddit Skin Lesions"
 
 def json_to_csv(json_path):
     # Read the JSON file into a Python object
