@@ -19,7 +19,7 @@ import os
 import torch.optim as optim
 import torch.nn as nn
 import torch
-from aug_pad import ImgTrainTransform, ImgEvalTransform
+from aug_reddit import ImgTrainTransform, ImgEvalTransform
 import time
 from sacred import Experiment
 from sacred.observers import FileStorageObserver
@@ -33,7 +33,7 @@ ex = Experiment()
 def cnfg():
 
     # Dataset variables
-    _folder = 1
+    _folder =  2
     _base_path = REDDIT_BASE_PATH
     _csv_path_train = os.path.join(_base_path, "reddit_parsed_folders.csv")
     _csv_path_test = os.path.join(_base_path, "reddit_parsed_test.csv")
@@ -49,7 +49,7 @@ def cnfg():
     # Training variables
     _best_metric = "loss"
     _pretrained = True
-    _lr_init = 0.001
+    _lr_init = 0.0001
     _sched_factor = 0.1
     _sched_min_lr = 1e-6
     _sched_patience = 10

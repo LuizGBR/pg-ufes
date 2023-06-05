@@ -36,6 +36,14 @@ class ImgTrainTransform:
                               iaa.AddToHueAndSaturation(value=(-10, 10), per_channel=True)
                           ])),
 
+            # additional augmentations
+            iaa.Sometimes(0.5, iaa.CropAndPad(percent=(-0.1, 0.1), pad_mode="constant", pad_cval=(0, 255))),
+            iaa.Sometimes(0.5, iaa.ElasticTransformation(alpha=(0.5, 3.5), sigma=0.25)),
+            iaa.Sometimes(0.5, iaa.PiecewiseAffine(scale=(0.01, 0.05))),
+            iaa.Sometimes(0.5, iaa.Sharpen(alpha=(0.0, 1.0), lightness=(0.75, 2.0))),
+            iaa.Sometimes(0.5, iaa.Superpixels(p_replace=(0.1, 0.5), n_segments=(16, 128))),
+            iaa.Sometimes(0.5, iaa.Emboss(alpha=(0.0, 1.0), strength =(0.5, 1.5))),
+
         ])
 
     def __call__(self, img):

@@ -41,8 +41,8 @@ def cnfg():
 
     _use_meta_data = True
     _neurons_reducer_block = 0
-    _comb_method = None # metanet, concat, or metablock
-    _comb_config = None # number of metadata
+    _comb_method = "metablok" # metanet, concat, or metablock
+    _comb_config = [64,81] # number of metadata resnet = [64,81], densenet=[32,81], effnet=[56,81]
     _batch_size = 30
     _epochs = 150
 

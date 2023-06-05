@@ -23,9 +23,32 @@ def json_to_csv(json_path):
 
     return df
 
+import pandas as pd
+
+def keep_rows_with_values(dataframe, column, values):
+    """
+    Keeps only the rows in the DataFrame where the specified column has any of the specified values.
+    
+    Args:
+        dataframe (pd.DataFrame): The input DataFrame.
+        column (str): The column to filter.
+        values (list): A list of values to keep in the specified column.
+    
+    Returns:
+        pd.DataFrame: The DataFrame with only the rows where the specified column has any of the specified values.
+    """
+    filtered_df = dataframe[dataframe[column].isin(values)]
+    filtered_df.reset_index(drop=True, inplace=True)
+    return filtered_df
+
+
 data_csv = json_to_csv(os.path.join(REDDIT_BASE_PATH, "dataset.json"))
 
-data = split_k_folder_csv(data_csv, "subreddit", save_path=None, k_folder=6, seed_number=13)
+filtered_data_csv = keep_rows_with_values(data_csv, column="subreddit", values=["Rosacea", "Psoriasis"])
+
+print(filtered_data_csv)
+
+data = split_k_folder_csv(filtered_data_csv, "subreddit", save_path=None, k_folder=6, seed_number=13)
 
 data_test = data[ data['folder'] == 6]
 data_train = data[ data['folder'] != 6]
