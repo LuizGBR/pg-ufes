@@ -10,3 +10,5 @@ Please, use this file to set the constants that will be used to load important l
 RAUG_PATH = "/home/lg/code/raug/"
 
 REDDIT_BASE_PATH = "/datasets/reddit"
+
+PAD_BASE_PATH = "/datasets/pad"

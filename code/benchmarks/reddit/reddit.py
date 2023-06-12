@@ -58,7 +58,7 @@ def cnfg():
     _weights = "frequency"
 
     _model_name = 'resnet-50'
-    _save_folder = "results/" + str(_comb_method) + "_" + _model_name + "_fold_" + str(_folder) + "_" + str(time.time()).replace('.', '')
+    _save_folder = "results/" + _model_name + "/" + "_fold_" + str(_folder) + "_" + str(time.time()).replace('.', '')
 
     # This is used to configure the sacred storage observer. In brief, it says to sacred to save its stuffs in
     # _save_folder. You don't need to worry about that.

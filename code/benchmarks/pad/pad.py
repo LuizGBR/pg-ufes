@@ -8,7 +8,7 @@ Email: pacheco.comp@gmail.com
 import sys
 sys.path.insert(0,'../../')
 sys.path.insert(0,'../../my_models') # including the path to my_models folder
-from constants import RAUG_PATH
+from constants import RAUG_PATH, PAD_BASE_PATH
 sys.path.insert(0,RAUG_PATH)
 from raug.loader import get_data_loader
 from raug.train import fit_model
@@ -34,14 +34,14 @@ def cnfg():
 
     # Dataset variables
     _folder = 1
-    _base_path = "/home/patcha/Datasets/PAD-UFES-20"
+    _base_path = PAD_BASE_PATH
     _csv_path_train = os.path.join(_base_path, "pad-ufes-20_parsed_folders.csv")
     _csv_path_test = os.path.join(_base_path, "pad-ufes-20_parsed_test.csv")
-    _imgs_folder_train = os.path.join(_base_path, "imgs")
+    _imgs_folder_train = os.path.join(_base_path, "images")
 
     _use_meta_data = True
     _neurons_reducer_block = 0
-    _comb_method = "metablok" # metanet, concat, or metablock
+    _comb_method = "metablock" # metanet, concat, or metablock
     _comb_config = [64,81] # number of metadata resnet = [64,81], densenet=[32,81], effnet=[56,81]
     _batch_size = 30
     _epochs = 150
@@ -108,7 +108,11 @@ def main (_folder, _csv_path_train, _imgs_folder_train, _lr_init, _sched_factor,
 
     # Loading validation data
     val_imgs_id = val_csv_folder['img_id'].values
-    val_imgs_path = ["{}/{}".format(_imgs_folder_train, img_id) for img_id in val_imgs_id]
+    val_imgs_path = []
+    for img_id in val_imgs_id:
+        path = "{}/{}".format(_imgs_folder_train, img_id)
+        if os.path.exists(path):
+            val_imgs_path.append(path)
     val_labels = val_csv_folder['diagnostic_number'].values
     if _use_meta_data:
         val_meta_data = val_csv_folder[meta_data_columns].values
@@ -122,7 +126,11 @@ def main (_folder, _csv_path_train, _imgs_folder_train, _lr_init, _sched_factor,
 
     print("- Loading training data...")
     train_imgs_id = train_csv_folder['img_id'].values
-    train_imgs_path = ["{}/{}".format(_imgs_folder_train, img_id) for img_id in train_imgs_id]
+    train_imgs_path = []
+    for img_id in train_imgs_id:
+        path = "{}/{}".format(_imgs_folder_train, img_id)
+        if os.path.exists(path):
+            train_imgs_path.append(path)
     train_labels = train_csv_folder['diagnostic_number'].values
     if _use_meta_data:
         train_meta_data = train_csv_folder[meta_data_columns].values
@@ -176,7 +184,11 @@ def main (_folder, _csv_path_train, _imgs_folder_train, _lr_init, _sched_factor,
     print("- Loading test data...")
     csv_test = pd.read_csv(_csv_path_test)
     test_imgs_id = csv_test['img_id'].values
-    test_imgs_path = ["{}/{}".format(_imgs_folder_train, img_id) for img_id in test_imgs_id]
+    test_imgs_path = []
+    for img_id in test_imgs_id:
+        path = "{}/{}".format(_imgs_folder_train, img_id)
+        if os.path.exists(path):
+            test_imgs_path.append(path)
     test_labels = csv_test['diagnostic_number'].values
     if _use_meta_data:
         test_meta_data = csv_test[meta_data_columns].values

@@ -8,13 +8,11 @@ Script to prepare data to train, validate and test PAD-UFES-20 dataset
 
 import sys
 sys.path.insert(0,'../../..')
-from constants import RAUG_PATH
+from constants import RAUG_PATH, PAD_BASE_PATH
 sys.path.insert(0,RAUG_PATH)
 import pandas as pd
 import os
 from raug.utils.loader import split_k_folder_csv, label_categorical_to_number
-
-ISIC_BASE_PATH = "/home/patcha/Datasets/PAD-UFES-20"
 
 clin_ = ["img_id", "diagnostic", "patient_id", "lesion_id", "biopsed"]
 
@@ -22,7 +20,7 @@ clin_feats = ["smoke", "drink", "background_father", "background_mother", "age",
                  "cancer_history", "has_piped_water", "has_sewage_system", "fitspatrick", "region", "diameter_1", "diameter_2",
                  "itch", "grew", "hurt", "changed", "bleed", "elevation"]
 
-data_csv = pd.read_csv(os.path.join(ISIC_BASE_PATH, "metadata.csv")).fillna("EMPTY")
+data_csv = pd.read_csv(os.path.join(PAD_BASE_PATH, "metadata.csv")).fillna("EMPTY")
 new_cli_cols = list()
 for c in clin_feats:
     if c in ["age", "diameter_1", "diameter_2"]:
@@ -67,17 +65,17 @@ data = split_k_folder_csv(new_df, "diagnostic",
 
 data_test = data[ data['folder'] == 6]
 data_train = data[ data['folder'] != 6]
-data_test.to_csv(os.path.join(ISIC_BASE_PATH, "pad-ufes-20_parsed_test.csv"), index=False)
-label_categorical_to_number (os.path.join(ISIC_BASE_PATH, "pad-ufes-20_parsed_test.csv"), "diagnostic",
+data_test.to_csv(os.path.join(PAD_BASE_PATH, "pad-ufes-20_parsed_test.csv"), index=False)
+label_categorical_to_number (os.path.join(PAD_BASE_PATH, "pad-ufes-20_parsed_test.csv"), "diagnostic",
                              col_target_number="diagnostic_number",
-                             save_path=os.path.join(ISIC_BASE_PATH, "pad-ufes-20_parsed_test.csv"))
+                             save_path=os.path.join(PAD_BASE_PATH, "pad-ufes-20_parsed_test.csv"))
 
 data_train = data_train.reset_index(drop=True)
 data_train = split_k_folder_csv(data_train, "diagnostic",
                                 save_path=None, k_folder=5, seed_number=8)
 
 label_categorical_to_number (data_train, "diagnostic", col_target_number="diagnostic_number",
-                             save_path=os.path.join(ISIC_BASE_PATH, "pad-ufes-20_parsed_folders.csv"))
+                             save_path=os.path.join(PAD_BASE_PATH, "pad-ufes-20_parsed_folders.csv"))
 
 
 

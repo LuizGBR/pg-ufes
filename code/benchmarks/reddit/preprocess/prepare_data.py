@@ -44,11 +44,11 @@ def keep_rows_with_values(dataframe, column, values):
 
 data_csv = json_to_csv(os.path.join(REDDIT_BASE_PATH, "dataset.json"))
 
-filtered_data_csv = keep_rows_with_values(data_csv, column="subreddit", values=["Rosacea", "Psoriasis"])
-
-print(filtered_data_csv)
+filtered_data_csv = keep_rows_with_values(data_csv, column="subreddit", values=["Rosacea", "Psoriasis", "Warts", "eczema"])
 
 data = split_k_folder_csv(filtered_data_csv, "subreddit", save_path=None, k_folder=6, seed_number=13)
+
+print(data)
 
 data_test = data[ data['folder'] == 6]
 data_train = data[ data['folder'] != 6]
