@@ -33,7 +33,7 @@ ex = Experiment()
 def cnfg():
 
     # Dataset variables
-    _folder =  2
+    _folder = 5
     _base_path = REDDIT_BASE_PATH
     _csv_path_train = os.path.join(_base_path, "reddit_parsed_folders.csv")
     _csv_path_test = os.path.join(_base_path, "reddit_parsed_test.csv")
@@ -48,7 +48,7 @@ def cnfg():
 
     # Training variables
     _best_metric = "loss"
-    _pretrained = True
+    _pretrained = False
     _lr_init = 0.0001
     _sched_factor = 0.1
     _sched_min_lr = 1e-6
@@ -57,8 +57,8 @@ def cnfg():
     _metric_early_stop = None
     _weights = "frequency"
 
-    _model_name = 'resnet-50'
-    _save_folder = "results/" + _model_name + "/" + "_fold_" + str(_folder) + "_" + str(time.time()).replace('.', '')
+    _model_name = 'efficientnet-b4'
+    _save_folder = "results/" + _model_name + "/" + "_fold_" + str(_folder) + "_" + "pretrained_" + str(_pretrained) + '_' + str(time.time()).replace('.', '')
 
     # This is used to configure the sacred storage observer. In brief, it says to sacred to save its stuffs in
     # _save_folder. You don't need to worry about that.

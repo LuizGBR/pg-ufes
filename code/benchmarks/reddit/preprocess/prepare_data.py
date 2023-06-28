@@ -48,8 +48,6 @@ filtered_data_csv = keep_rows_with_values(data_csv, column="subreddit", values=[
 
 data = split_k_folder_csv(filtered_data_csv, "subreddit", save_path=None, k_folder=6, seed_number=13)
 
-print(data)
-
 data_test = data[ data['folder'] == 6]
 data_train = data[ data['folder'] != 6]
 

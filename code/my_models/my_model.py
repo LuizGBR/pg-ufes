@@ -33,7 +33,7 @@ def set_model (model_name, num_class, neurons_reducer_block=0, comb_method=None,
 
     model = None
     if model_name == 'resnet-50':
-        model = MyResnet(models.resnet50(weights=models.ResNet50_Weights.DEFAULT), num_class, neurons_reducer_block, freeze_conv,
+        model = MyResnet(models.resnet50(pretrained=pre_torch), num_class, neurons_reducer_block, freeze_conv,
                          comb_method=comb_method, comb_config=comb_config)
 
     elif model_name == 'resnet-101':

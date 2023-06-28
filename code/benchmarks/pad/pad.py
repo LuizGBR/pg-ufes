@@ -14,6 +14,7 @@ from raug.loader import get_data_loader
 from raug.train import fit_model
 from raug.eval import test_model
 from my_model import set_model
+from raug.checkpoints import load_model
 import pandas as pd
 import os
 import torch.optim as optim
@@ -24,6 +25,9 @@ import time
 from sacred import Experiment
 from sacred.observers import FileStorageObserver
 from raug.utils.loader import get_labels_frequency
+from resnet import MyResnet
+from effnet import MyEffnet
+from densenet import MyDensenet
 
 
 # Starting sacred experiment
@@ -39,7 +43,7 @@ def cnfg():
     _csv_path_test = os.path.join(_base_path, "pad-ufes-20_parsed_test.csv")
     _imgs_folder_train = os.path.join(_base_path, "images")
 
-    _use_meta_data = True
+    _use_meta_data = None 
     _neurons_reducer_block = 0
     _comb_method = "metablock" # metanet, concat, or metablock
     _comb_config = [64,81] # number of metadata resnet = [64,81], densenet=[32,81], effnet=[56,81]
@@ -47,6 +51,7 @@ def cnfg():
     _epochs = 150
 
     # Training variables
+    _checkpoint_path = "/home/lg/Github/pg-ufes/code/benchmarks/reddit/results/resnet-50/_fold_5_pretrained_True_1687178723575311/best-checkpoint/best-checkpoint.pth"
     _best_metric = "loss"
     _pretrained = True
     _lr_init = 0.001
@@ -58,7 +63,7 @@ def cnfg():
     _weights = "frequency"
 
     _model_name = 'resnet-50'
-    _save_folder = "results/" + str(_comb_method) + "_" + _model_name + "_fold_" + str(_folder) + "_" + str(
+    _save_folder = "results/" + str(_comb_method) + "_" + _model_name + "_fold_" + str(_folder) + "_" + "_pretrained_" +str(_pretrained) + "_" + str(
         time.time()).replace('.', '')
 
     # This is used to configure the sacred storage observer. In brief, it says to sacred to save its stuffs in
@@ -69,7 +74,7 @@ def cnfg():
 @ex.automain
 def main (_folder, _csv_path_train, _imgs_folder_train, _lr_init, _sched_factor, _sched_min_lr, _sched_patience,
           _batch_size, _epochs, _early_stop, _weights, _model_name, _pretrained, _save_folder, _csv_path_test,
-          _best_metric, _neurons_reducer_block, _comb_method, _comb_config, _use_meta_data, _metric_early_stop):
+          _best_metric, _neurons_reducer_block, _comb_method, _comb_config, _use_meta_data, _metric_early_stop, _checkpoint_path):
 
     meta_data_columns = ["smoke_False", "smoke_True", "drink_False", "drink_True", "background_father_POMERANIA",
                          "background_father_GERMANY", "background_father_BRAZIL", "background_father_NETHERLANDS",
@@ -152,8 +157,18 @@ def main (_folder, _csv_path_train, _imgs_folder_train, _lr_init, _sched_factor,
     ####################################################################################################################
     print("- Loading", _model_name)
 
-    model = set_model(_model_name, len(_labels_name), neurons_reducer_block=_neurons_reducer_block,
-                      comb_method=_comb_method, comb_config=_comb_config, pretrained=_pretrained)
+    pre_model = set_model(_model_name, 4, neurons_reducer_block=_neurons_reducer_block, comb_method=_comb_method, comb_config=_comb_config, pretrained=_pretrained)
+    
+    loaded_model = load_model(_checkpoint_path, pre_model)
+
+    model = MyResnet(loaded_model, len(_labels_name), 0, True, comb_method=_comb_method, comb_config=_comb_config)
+
+    if _model_name == 'densenet-121':
+        model = MyDensenet(model, len(_labels_name), 0, True, comb_method=_comb_method, comb_config=_comb_config)
+    
+    if _model_name == 'efficientnet-b4':
+        model = MyEffnet(model, len(_labels_name), 0, True, comb_method=_comb_method, comb_config=_comb_config)
+
     ####################################################################################################################
     if _weights == 'frequency':
         _weights = (_freq.sum() / _freq).round(3)
@@ -167,7 +182,7 @@ def main (_folder, _csv_path_train, _imgs_folder_train, _lr_init, _sched_factor,
     print("- Starting the training phase...")
     print("-" * 50)
     fit_model (model, train_data_loader, val_data_loader, optimizer=optimizer, loss_fn=loss_fn, epochs=_epochs,
-               epochs_early_stop=_early_stop, save_folder=_save_folder, initial_model=None, metric_early_stop=_metric_early_stop,
+               epochs_early_stop=_early_stop, save_folder=_save_folder, initial_model="/home/lg/Github/pg-ufes/code/benchmarks/reddit/results/resnet-50/_fold_10_1686540385435096/best-checkpoint/best-checkpoint.pth", metric_early_stop=_metric_early_stop,
                device=None, schedule_lr=scheduler_lr, config_bot=None, model_name="CNN", resume_train=False,
                history_plot=True, val_metrics=["balanced_accuracy"], best_metric=_best_metric)
     ####################################################################################################################
