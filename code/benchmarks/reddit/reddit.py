@@ -33,7 +33,7 @@ ex = Experiment()
 def cnfg():
 
     # Dataset variables
-    _folder = 5
+    _folder = 1
     _base_path = REDDIT_BASE_PATH
     _csv_path_train = os.path.join(_base_path, "reddit_parsed_folders.csv")
     _csv_path_test = os.path.join(_base_path, "reddit_parsed_test.csv")
@@ -42,13 +42,13 @@ def cnfg():
     _use_meta_data = False
     _neurons_reducer_block = 0
     _comb_method = None # metanet, concat, or metablock
-    _comb_config = [64, 81]
+    _comb_config = [56,81]
     _batch_size = 30
     _epochs = 150
 
     # Training variables
     _best_metric = "loss"
-    _pretrained = False
+    _pretrained = True
     _lr_init = 0.0001
     _sched_factor = 0.1
     _sched_min_lr = 1e-6
@@ -58,7 +58,7 @@ def cnfg():
     _weights = "frequency"
 
     _model_name = 'efficientnet-b4'
-    _save_folder = "results/" + _model_name + "/" + "_fold_" + str(_folder) + "_" + "pretrained_" + str(_pretrained) + '_' + str(time.time()).replace('.', '')
+    _save_folder = "results/" + _model_name + "/" + "pretrained_" + str(_pretrained) + '/' + "folder_" + str(_folder) + "_" + str(time.time()).replace('.', '')
 
     # This is used to configure the sacred storage observer. In brief, it says to sacred to save its stuffs in
     # _save_folder. You don't need to worry about that.
