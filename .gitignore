@@ -1,8 +1,0 @@
-# ignoring env files
-ml_env/
-
-# ignoring pycache
-__pycache__/
-
-# ignoring logs
-lightning_logs/
