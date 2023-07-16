@@ -26,8 +26,8 @@ from sacred import Experiment
 from sacred.observers import FileStorageObserver
 from raug.utils.loader import get_labels_frequency
 from resnet import MyResnet
-from effnet import MyEffnet
 from densenet import MyDensenet
+from vggnet import MyVGGNet
 
 
 # Starting sacred experiment
@@ -37,12 +37,12 @@ ex = Experiment()
 def cnfg():
 
     # Dataset variables
-    _folder = 5
+    _folder = 1
     _base_path = PAD_BASE_PATH
     _csv_path_train = os.path.join(_base_path, "pad-ufes-20_parsed_folders.csv")
     _csv_path_test = os.path.join(_base_path, "pad-ufes-20_parsed_test.csv")
     _imgs_folder_train = os.path.join(_base_path, "images")
-    _transfer_learning = False
+    
 
     _use_meta_data = False 
     _neurons_reducer_block = 0
@@ -52,9 +52,10 @@ def cnfg():
     _epochs = 150
 
     # Training variables
-    _checkpoint_path = ''
+    _transfer_learning = True
+    _checkpoint_path = '/home/lg/Github/pg-ufes/code/benchmarks/reddit/results/vgg-13/pretrained_False/folder_1_1688769702843884/best-checkpoint/best-checkpoint.pth'
     _best_metric = "loss"
-    _pretrained = True
+    _pretrained = False
     _lr_init = 0.0001
     _sched_factor = 0.1
     _sched_min_lr = 1e-6
@@ -63,9 +64,9 @@ def cnfg():
     _metric_early_stop = None
     _weights = "frequency"
 
-    _model_name = 'densenet-121'
+    _model_name = 'vgg-13'
 
-    _save_folder = "results/" + _model_name + "/" + "pretrained_" + (str(_pretrained) if _checkpoint_path == '' else 'reddit') + '/' + "folder_" + str(_folder) + "_" + str(time.time()).replace('.', '')
+    _save_folder = "results/" + _model_name + "/" + "pretrained_" + str(_pretrained) + ('/transfer_learning' if _transfer_learning else '') + '/' + "folder_" + str(_folder) + "_" + str(time.time()).replace('.', '')
 
     # This is used to configure the sacred storage observer. In brief, it says to sacred to save its stuffs in
     # _save_folder. You don't need to worry about that.
@@ -75,7 +76,7 @@ def cnfg():
 @ex.automain
 def main (_folder, _csv_path_train, _imgs_folder_train, _lr_init, _sched_factor, _sched_min_lr, _sched_patience,
           _batch_size, _epochs, _early_stop, _weights, _model_name, _pretrained, _save_folder, _csv_path_test,
-          _best_metric, _neurons_reducer_block, _comb_method, _comb_config, _use_meta_data, _metric_early_stop, _checkpoint_path):
+          _best_metric, _neurons_reducer_block, _comb_method, _comb_config, _use_meta_data, _metric_early_stop, _checkpoint_path, _transfer_learning):
 
     meta_data_columns = ["smoke_False", "smoke_True", "drink_False", "drink_True", "background_father_POMERANIA",
                          "background_father_GERMANY", "background_father_BRAZIL", "background_father_NETHERLANDS",
@@ -158,19 +159,29 @@ def main (_folder, _csv_path_train, _imgs_folder_train, _lr_init, _sched_factor,
     ####################################################################################################################
     print("- Loading", _model_name)
 
-    model = set_model(_model_name, len(_labels_name), neurons_reducer_block=_neurons_reducer_block, comb_method=_comb_method, comb_config=_comb_config, pretrained=_pretrained)
+    model = {}
 
-    #pre_model = set_model(_model_name, 14, neurons_reducer_block=_neurons_reducer_block, comb_method=_comb_method, comb_config=_comb_config, pretrained=_pretrained)
-    
-    # loaded_model = load_model(_checkpoint_path, pre_model)
+    if _transfer_learning == False:
+        model = set_model(_model_name, len(_labels_name), None, neurons_reducer_block=_neurons_reducer_block,
+                        comb_method=_comb_method, comb_config=_comb_config, pretrained=_pretrained)
 
-    # model = MyResnet(loaded_model, len(_labels_name), 0, True, comb_method=_comb_method, comb_config=_comb_config)
+    else:
+        pre_model = set_model(_model_name, 14, None, neurons_reducer_block=_neurons_reducer_block,
+                        comb_method=_comb_method, comb_config=_comb_config, pretrained=_pretrained)
+        
+        loaded_model = load_model(_checkpoint_path, pre_model)
 
-    # if _model_name == 'densenet-121':
-    #     model = MyDensenet(loaded_model, len(_labels_name), 0, True, comb_method=_comb_method, comb_config=_comb_config)
-    
-    # if _model_name == 'efficientnet-b4':
-    #     model = MyEffnet(loaded_model, len(_labels_name), 0, True, comb_method=_comb_method, comb_config=_comb_config)
+        model = set_model(_model_name, len(_labels_name), loaded_model, neurons_reducer_block=_neurons_reducer_block,
+                        comb_method=_comb_method, comb_config=_comb_config, pretrained=_pretrained)
+
+        # model = MyResnet(loaded_model, len(_labels_name), 0, True, comb_method=_comb_method, comb_config=_comb_config)
+
+        # if _model_name == 'densenet-121':
+        #     model = MyDensenet(loaded_model, len(_labels_name), 0, True, comb_method=_comb_method, comb_config=_comb_config)
+        
+        # if _model_name == 'vgg-13':
+        #     model = MyVGGNet(loaded_model, len(_labels_name), 0, True, comb_method=_comb_method, comb_config=_comb_config)
+            
 
     ####################################################################################################################
     if _weights == 'frequency':

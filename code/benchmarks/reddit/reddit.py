@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Autor: André Pacheco
-Email: pacheco.comp@gmail.com
-
-"""
-
 import sys
 sys.path.insert(0,'../../') # including the path to deep-tasks folder
 sys.path.insert(0,'../../my_models') # including the path to my_models folder
@@ -42,7 +35,7 @@ def cnfg():
     _use_meta_data = False
     _neurons_reducer_block = 0
     _comb_method = None # metanet, concat, or metablock
-    _comb_config = [56,81]
+    _comb_config = [32,81]
     _batch_size = 30
     _epochs = 150
 
@@ -57,7 +50,7 @@ def cnfg():
     _metric_early_stop = None
     _weights = "frequency"
 
-    _model_name = 'efficientnet-b4'
+    _model_name = 'vgg-13'
     _save_folder = "results/" + _model_name + "/" + "pretrained_" + str(_pretrained) + '/' + "folder_" + str(_folder) + "_" + str(time.time()).replace('.', '')
 
     # This is used to configure the sacred storage observer. In brief, it says to sacred to save its stuffs in
@@ -151,7 +144,7 @@ def main (_folder, _csv_path_train, _imgs_folder_train, _lr_init, _sched_factor,
     ####################################################################################################################
     print("- Loading", _model_name)
 
-    model = set_model(_model_name, len(_labels_name), neurons_reducer_block=_neurons_reducer_block,
+    model = set_model(_model_name, len(_labels_name), None, neurons_reducer_block=_neurons_reducer_block,
                       comb_method=_comb_method, comb_config=_comb_config, pretrained=_pretrained)
     ####################################################################################################################
     if _weights == 'frequency':
