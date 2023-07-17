@@ -1,4 +1,4 @@
-# Projeto de Graduação - Análise de Transferência de Aprendizado Utilizando Rótulos Fracos
+# Projeto de Graduação -Análise de transferência de aprendizado com rótulos fracos para classificação de câncer de pele
 Neste repositório está o código implementado para a realização dos testes usados para análise abordada em meu PG. Forneço algumas instruções sobre como utilizá-lo a seguir.
 
 ## Dependências
@@ -11,17 +11,17 @@ Para executar este código, você deve clonar o  [repositório Raug](https://git
 Após clonar este repositório, você deve definir o caminho no arquivo constants.py. As instruções estarão lá.
 
 ## Organização
-Na pasta my_models, você encontrará as implementações dos modelos de CNN.
+Na pasta my_models, você encontrará as implementações dos modelos de CNN. Os mesmos foram aproveitados dos benchmarks disponíveis no [repositório Metablock](https://github.com/paaatcha/MetaBlock/tree/main) Apesar disso, a abordagem descrita em tal repositório não foi utilizada nos experimentos realizados neste trabalho.
 
-Na pasta benchmarks, estão os scripts para os experimentos nos conjuntos de dados REDDIT e PAD-UFES-20.
+Na pasta benchmarks, estão os scripts para os experimentos com os conjuntos de dados REDDIT e PAD-UFES-20.
 
-Para executar os benchmarks, foi utilizado o Sacred, que é basicamente uma ferramenta para organizar experimentos. 
+Para executar os benchmarks, há a opção de se utilizar o Sacred, que é basicamente uma ferramenta para organizar experimentos. 
 
 Não é necessário um conhecimento prévio em Sacred para rodar o código, sendo apenas uma ferramenta de auxilio.
 
 Usando o Sacred, você pode executar um experimento da seguinte maneira, por exemplo: `python reddit.py with _lr=0.001 _batch_size=50`.
 
-O uso do Sacred não é obrigatório. Você pode alterar os parâmetros diretamente no código.
+Caso escolha por não utilizá-lo, você pode alterar os parâmetros diretamente no código.
 
 Importante: É necessário definir o caminho para o conjunto de dados em benchmark/pad.py e benchmark/reddit.py.
 
